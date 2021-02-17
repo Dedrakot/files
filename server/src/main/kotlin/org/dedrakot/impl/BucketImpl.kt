@@ -48,9 +48,15 @@ class BucketImpl(pathPrefix: String) : Bucket {
 }
 
 class ItemWriterImpl(val path: String) : ItemWriter {
+    @Suppress("BlockingMethodInNonBlockingContext")
     override suspend fun write(updater: suspend OutputStream.() -> Long) = withContext(Dispatchers.IO) {
         val resultPath = Path.of(path)
-        val tmpPath = Files.createTempFile(resultPath.parent, null, ".tmp")
+        val parentDirectory = resultPath.parent
+        Files.createDirectories(parentDirectory)
+        if (Files.isDirectory(parentDirectory)) {
+            throw IllegalArgumentException("Path to object can't be created")
+        }
+        val tmpPath = Files.createTempFile(parentDirectory, null, ".tmp")
         val bytesWritten = FileOutputStream(tmpPath.toFile()).buffered().use { it.updater() }
         Files.move(tmpPath,resultPath, StandardCopyOption.ATOMIC_MOVE)
         return@withContext bytesWritten
