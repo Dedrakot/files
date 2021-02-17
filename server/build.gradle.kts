@@ -24,5 +24,5 @@ dependencies {
 
     implementation("org.kodein.di:kodein-di:$kodeinVersion")
 
-    testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
 }

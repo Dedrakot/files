@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory
 import java.io.InputStream
 import java.io.OutputStream
 import java.lang.IllegalArgumentException
-import java.nio.charset.StandardCharsets
 import java.nio.file.Paths
 
 
@@ -34,8 +33,8 @@ fun main(args: Array<String>): Unit = io.ktor.server.cio.EngineMain.main(args)
 
 @Suppress("unused")
 @kotlin.jvm.JvmOverloads
-fun Application.module(testing: Boolean = false) {
-    val di = filesDI()
+fun Application.module(pathPrefix: String = System.getProperty("files.path"), testing: Boolean = false) {
+    val di = filesDI(pathPrefix)
     val jsonMapper = Json {
         prettyPrint = true
         encodeDefaults = false

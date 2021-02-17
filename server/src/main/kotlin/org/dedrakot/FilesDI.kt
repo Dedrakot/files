@@ -6,8 +6,7 @@ import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.singleton
 
-fun filesDI() = DI {
-    val pathPrefix = System.getProperty("files.path", "tmp")
+fun filesDI(pathPrefix:String) = DI {
     bind<BucketFactory>() with singleton { BucketFactoryImpl(pathPrefix) }
 }
 
