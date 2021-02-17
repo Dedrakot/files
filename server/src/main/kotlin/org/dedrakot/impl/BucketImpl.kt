@@ -32,7 +32,7 @@ class BucketImpl(pathPrefix: String) : Bucket {
 
     override fun list(path: String): List<ItemInfo> {
         val p = Paths.get(fsPath(path))
-        return if (Files.isDirectory(p)) listDir(p) else Collections.emptyList();
+        return if (Files.isDirectory(p)) listDir(p) else Collections.emptyList()
     }
 
     companion object Util {
@@ -49,7 +49,11 @@ class BucketImpl(pathPrefix: String) : Bucket {
 
 class ItemWriterImpl(val path: String) : ItemWriter {
     override suspend fun write(updater: suspend OutputStream.() -> Long) = withContext(Dispatchers.IO) {
-        FileOutputStream(path).buffered().use { it.updater() }
+        val resultPath = Path.of(path)
+        val tmpPath = Files.createTempFile(resultPath.parent, null, ".tmp")
+        val bytesWritten = FileOutputStream(tmpPath.toFile()).buffered().use { it.updater() }
+        Files.move(tmpPath,resultPath, StandardCopyOption.ATOMIC_MOVE)
+        return@withContext bytesWritten
     }
 }
 
